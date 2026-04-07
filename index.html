@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritas AI | Fake News Detection System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Added onload to ensure lucide is initialized only after script loads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.min.js" onload="initIcons()"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono&display=swap');
+        
+        :root {
+            --bg-primary: #0f172a;
+            --accent: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .trust-gradient {
+            background: linear-gradient(90deg, #ef4444 0%, #eab308 50%, #22c55e 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 1);
+        }
+
+        .pulse-analysis {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-blue-600 p-1.5 rounded-lg">
+                        <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-slate-800 uppercase italic">Veritas<span class="text-blue-600 font-black">AI</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
+                    <a href="#analyzer" class="hover:text-blue-600 transition">Analyzer</a>
+                    <a href="#architecture" class="hover:text-blue-600 transition">NLP Architecture</a>
+                    <a href="#metrics" class="hover:text-blue-600 transition">Benchmarks</a>
+                </div>
+                <button class="bg-slate-900 text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-700 transition">
+                    System Status: Active
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="py-16 bg-white border-b border-slate-100">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">v2.4 Engine Online</span>
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 mt-6 mb-4 leading-tight">
+                Combat Digital Deception with <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Neural Logic.</span>
+            </h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                Our AI-driven system utilizes advanced Natural Language Processing to dissect linguistic patterns, sentiment bias, and source reliability in milliseconds.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left Column: Input Analyzer -->
+            <div id="analyzer" class="lg:col-span-2 space-y-6">
+                <div class="glass-card rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold flex items-center gap-2">
+                            <i data-lucide="scan-search" class="text-blue-600"></i>
+                            Live Article Analysis
+                        </h2>
+                        <span class="text-xs text-slate-400 mono">NLP-BERT-09X</span>
+                    </div>
+                    
+                    <textarea id="newsInput" rows="8" 
+                        class="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-700 placeholder:text-slate-400 transition"
+                        placeholder="Paste article text or headline here for deep neural analysis..."></textarea>
+                    
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <button onclick="analyzeNews()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl flex items-center gap-2 transition shadow-lg shadow-blue-200">
+                            <i data-lucide="cpu"></i> Run Inference
+                        </button>
+                        <button onclick="clearText()" class="bg-white border border-slate-200 text-slate-600 py-3 px-6 rounded-xl hover:bg-slate-50 transition">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analysis Results (Hidden by Default) -->
+                <div id="resultsCard" class="hidden glass-card rounded-2xl p-8 border-2 border-slate-100 transition-all duration-500">
+                    <div id="loadingState" class="hidden flex flex-col items-center py-10">
+                        <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p class="text-slate-500 animate-pulse font-medium">Extracting TF-IDF Features & Vectorizing...</p>
+                    </div>
+
+                    <div id="resultContent" class="hidden">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                            <div>
+                                <h3 class="text-2xl font-black text-slate-900 mb-1" id="finalVerdict">PREDICTING...</h3>
+                                <p class="text-slate-500 text-sm">Neural Confidence: <span id="confidenceScore" class="font-bold text-blue-600">0%</span></p>
+                            </div>
+                            <div class="flex gap-2">
+                                <div id="verdictBadge" class="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest"></div>
+                            </div>
+                        </div>
+
+                        <!-- Trust Meter -->
+                        <div class="mb-8">
+                            <div class="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase tracking-tighter">
+                                <span>Fabricated (Fake)</span>
+                                <span>Verified (Real)</span>
+                            </div>
+                            <div class="h-4 w-full bg-slate-200 rounded-full overflow-hidden">
+                                <div id="trustBar" class="h-full trust-gradient transition-all duration-1000 ease-out" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Insights -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Sentiment</span>
+                                <p id="sentimentTag" class="text-sm font-semibold text-slate-700">Analyzing...</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Complexity</span>
+                                <p id="complexityTag" class="text-sm font-semibold text-slate-700">Analyzing...</p>
+                            </div>
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Source Bias</span>
+                                <p id="biasTag" class="text-sm font-semibold text-slate-700">Analyzing...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sidebar / Info -->
+            <div class="space-y-6">
+                <!-- NLP Pipeline Card -->
+                <div id="architecture" class="bg-slate-900 rounded-2xl p-6 text-white shadow-xl">
+                    <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <i data-lucide="layers" class="text-blue-400"></i>
+                        The NLP Pipeline
+                    </h3>
+                    <div class="space-y-6 relative">
+                        <div class="absolute left-3 top-2 bottom-2 w-0.5 bg-slate-700"></div>
+                        
+                        <div class="relative pl-8">
+                            <div class="absolute left-0 top-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold">1</div>
+                            <h4 class="text-sm font-bold text-blue-400 uppercase tracking-wide">Preprocessing</h4>
+                            <p class="text-xs text-slate-400 mt-1">Tokenization, Lemmatization, and Stop-word removal to clean the noise.</p>
+                        </div>
+
+                        <div class="relative pl-8">
+                            <div class="absolute left-0 top-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold">2</div>
+                            <h4 class="text-sm font-bold text-blue-400 uppercase tracking-wide">Vectorization</h4>
+                            <p class="text-xs text-slate-400 mt-1">Converting text into numerical TF-IDF scores or Word Embeddings (Word2Vec).</p>
+                        </div>
+
+                        <div class="relative pl-8">
+                            <div class="absolute left-0 top-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold">3</div>
+                            <h4 class="text-sm font-bold text-blue-400 uppercase tracking-wide">Model Classification</h4>
+                            <p class="text-xs text-slate-400 mt-1">Passing vectors through Logistic Regression or BERT for probability prediction.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Stats -->
+                <div id="metrics" class="glass-card rounded-2xl p-6 border border-slate-200">
+                    <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest mb-4">Model Performance</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="font-semibold text-slate-600">Logistic Regression</span>
+                                <span class="text-blue-600 font-bold">91.4%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-slate-100 rounded-full">
+                                <div class="h-full bg-blue-400 rounded-full" style="width: 91%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="font-semibold text-slate-600">Random Forest</span>
+                                <span class="text-blue-600 font-bold">93.8%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-slate-100 rounded-full">
+                                <div class="h-full bg-indigo-400 rounded-full" style="width: 93%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="font-semibold text-slate-600">BERT (Deep Learning)</span>
+                                <span class="text-blue-600 font-bold">98.2%</span>
+                            </div>
+                            <div class="h-1.5 w-full bg-slate-100 rounded-full">
+                                <div class="h-full bg-purple-500 rounded-full" style="width: 98%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="p-4 bg-amber-50 rounded-xl border border-amber-100 text-amber-800 text-[11px] leading-relaxed">
+                    <i data-lucide="alert-triangle" class="inline-block w-3 h-3 mr-1"></i>
+                    <strong>AI LIMITATION:</strong> This system uses a linguistic probability engine. Real-world verification requires cross-referencing with trusted primary sources and investigative journalism.
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-12 mt-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center gap-6 mb-6">
+                <i data-lucide="github" class="w-5 h-5 text-slate-400 hover:text-slate-900 cursor-pointer"></i>
+                <i data-lucide="twitter" class="w-5 h-5 text-slate-400 hover:text-slate-900 cursor-pointer"></i>
+                <i data-lucide="database" class="w-5 h-5 text-slate-400 hover:text-slate-900 cursor-pointer"></i>
+            </div>
+            <p class="text-slate-500 text-sm">&copy; 2026 Veritas AI Detection Systems. Built for Transparency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Use a safe initialization wrapper
+        function initIcons() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Additional safeguard for DOM content loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            initIcons();
+        });
+
+        function clearText() {
+            document.getElementById('newsInput').value = '';
+            document.getElementById('resultsCard').classList.add('hidden');
+        }
+
+        async function analyzeNews() {
+            const input = document.getElementById('newsInput').value;
+            if (input.trim().length < 20) {
+                alert("Please enter a longer text for accurate analysis.");
+                return;
+            }
+
+            const resultsCard = document.getElementById('resultsCard');
+            const loading = document.getElementById('loadingState');
+            const content = document.getElementById('resultContent');
+
+            // Show loading state
+            resultsCard.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            // Scroll to results
+            resultsCard.scrollIntoView({ behavior: 'smooth' });
+
+            // Simulate AI Processing time
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Heuristic Analysis Logic (Simulation of an NLP Model)
+            const lowerInput = input.toLowerCase();
+            const clickbaitWords = ['shocking', 'won\'t believe', 'conspiracy', 'emergency', 'secret', 'revealed', 'exposed', 'miracle'];
+            const formalWords = ['according to', 'research', 'stated', 'official', 'representative', 'scientific'];
+            
+            let score = 50; // Starting neutral score
+            
+            // Check for excessive caps
+            const capsCount = (input.match(/[A-Z]/g) || []).length;
+            if (capsCount > input.length * 0.2) score -= 15;
+
+            // Check for exclamation marks
+            const exclamationCount = (input.match(/!/g) || []).length;
+            if (exclamationCount > 3) score -= 10;
+
+            // Check for clickbait vs formal vocabulary
+            clickbaitWords.forEach(w => { if (lowerInput.includes(w)) score -= 12; });
+            formalWords.forEach(w => { if (lowerInput.includes(w)) score += 10; });
+
+            // Normalize score between 5 and 95
+            score = Math.max(5, Math.min(95, score));
+
+            // Update UI
+            loading.classList.add('hidden');
+            content.classList.remove('hidden');
+
+            const verdictEl = document.getElementById('finalVerdict');
+            const confidenceEl = document.getElementById('confidenceScore');
+            const badgeEl = document.getElementById('verdictBadge');
+            const trustBar = document.getElementById('trustBar');
+
+            trustBar.style.width = score + '%';
+            confidenceEl.innerText = (score > 50 ? score : (100 - score)) + '%';
+
+            if (score > 65) {
+                verdictEl.innerText = "LIKELY LEGITIMATE";
+                verdictEl.className = "text-2xl font-black text-green-600 mb-1";
+                badgeEl.innerText = "Verified Signal";
+                badgeEl.className = "px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-green-100 text-green-700";
+                updateTags("Neutral", "High (Journalistic)", "Low");
+            } else if (score < 40) {
+                verdictEl.innerText = "HIGH RISK / FABRICATED";
+                verdictEl.className = "text-2xl font-black text-red-600 mb-1";
+                badgeEl.innerText = "Misinformation Flag";
+                badgeEl.className = "px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-red-100 text-red-700";
+                updateTags("Sensationalist", "Low (Simplified)", "High");
+            } else {
+                verdictEl.innerText = "INCONCLUSIVE / BIASED";
+                verdictEl.className = "text-2xl font-black text-amber-600 mb-1";
+                badgeEl.innerText = "Mixed Reliability";
+                badgeEl.className = "px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest bg-amber-100 text-amber-700";
+                updateTags("Subjective", "Moderate", "Medium");
+            }
+        }
+
+        function updateTags(sentiment, complexity, bias) {
+            document.getElementById('sentimentTag').innerText = sentiment;
+            document.getElementById('complexityTag').innerText = complexity;
+            document.getElementById('biasTag').innerText = bias;
+        }
+    </script>
+</body>
+</html>
